@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Geode/binding/PlayLayer.hpp"
+#include "Geode/utils/cocos.hpp"
 #include <Geode/Geode.hpp>
 #include <Geode/ui/GeodeUI.hpp>
 #include <Solana/File/FileManager.hpp>
@@ -45,16 +47,9 @@ protected:
 
         Solana::setMode(Mode::Replay);
 
-        auto c = new PlayLayer();
-        c->setObjType(CCObjectType::PlayLayer);
-        c->init(this->m_level, false, false);
-        // c->setScale(0.5f);
-        c->setPosition(0, 0);
-
-        auto scene = CCScene::create();
-        scene->addChild(c);
-
-        CCDirector::get()->pushScene(scene);
+        CCDirector::get()->pushScene(
+            PlayLayer::scene(this->m_level, false, false)
+        );
 
         this->play();
     }
@@ -90,9 +85,7 @@ protected:
         int columns = Mod::get()->getSettingValue<int64_t>("columns");
 
         for (int i = 0; i < rows*columns; i++) {
-            auto c = new PlayLayer();
-            c->setObjType(CCObjectType::PlayLayer);
-            c->init(this->m_level, false, false);
+            auto c = getChildOfType<PlayLayer>(PlayLayer::scene(this->m_level, false, false), 0);
 
             // Speed up
             c->m_gameState.m_timeWarp = Mod::get()->getSettingValue<double>("timewarp");
@@ -137,9 +130,7 @@ protected:
         int columns = Mod::get()->getSettingValue<int64_t>("columns");
 
         for (int i = 0; i < rows*columns; i++) {
-            auto c = new PlayLayer();
-            c->setObjType(CCObjectType::PlayLayer);
-            c->init(this->m_level, false, false);
+            auto c = getChildOfType<PlayLayer>(PlayLayer::scene(this->m_level, false, false), 0);
 
             // Speed up
             c->m_gameState.m_timeWarp = Mod::get()->getSettingValue<double>("timewarp");

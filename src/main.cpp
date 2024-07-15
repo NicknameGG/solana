@@ -317,13 +317,13 @@ class $modify(PlayLayer) {
             if (this->m_unk3688) {
 				if (noClipSpike->m_uniqueID == this->m_unk3688->m_uniqueID) {
                     // Yeahhh, I have no idea.
-                    auto v7 = *&this->__pad3577[149];
-                    *&this->__pad1031[16] = v7;
-                    auto v8 = (rand() / 32767.0) * 1000.0;
-                    *&this->__pad1031[12] = v8;
-                    *&this->__pad1031[8] = v7 + v8;
-                    this->__pad1031[20] = 1;
-					return;
+                    int v7 = *reinterpret_cast<int*>(reinterpret_cast<std::uintptr_t>(this) + 13024);
+                    *reinterpret_cast<int*>(reinterpret_cast<std::uintptr_t>(this) + 14040) = v7;
+                    float v8 = (rand() / 32767.0) * 1000.0;
+                    *reinterpret_cast<float*>(reinterpret_cast<std::uintptr_t>(this) + 14036i64) = v8;
+                    *reinterpret_cast<float*>(reinterpret_cast<std::uintptr_t>(this) + 14032i64) = v7 + v8;
+                    *reinterpret_cast<int*>(reinterpret_cast<std::uintptr_t>(this) + 14044i64) = 1;
+                    return;
 				}
 			}
         }
