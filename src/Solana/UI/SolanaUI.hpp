@@ -18,12 +18,11 @@ protected:
     }
 
     PlayLayer* createPlayLayer() {
-        // auto c = new PlayLayer();
-        // c->setObjType(CCObjectType::PlayLayer);
-        // c->init(this->m_level, false, false);
+        auto c = new PlayLayer();
+        c->setObjType(CCObjectType::PlayLayer);
+        c->init(this->m_level, false, false);
 
-        // // Speed up
-        // c->m_gameState.m_timeWarp = Mod::get()->getSettingValue<double>("timewarp");
+        return c;
 
         return getChildOfType<PlayLayer>(PlayLayer::scene(this->m_level, false, false), 0);
     }
@@ -58,8 +57,12 @@ protected:
 
         auto c = createPlayLayer();
 
+        // For some reason, it crashes when trying to add a child to the scene
+        auto layer = CCLayer::create();
+        layer->addChild(c);
+
         auto scene = CCScene::create();
-        scene->addChild(c);
+        scene->addChild(layer);
 
         CCDirector::get()->pushScene(scene);
         this->play();

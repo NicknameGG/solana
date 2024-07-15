@@ -29,6 +29,22 @@
 			"control": {
 				"slider-step": 5.0
 			}
+		},
+		"show_objects": {
+			"name": "Show Objects when Training",
+			"type": "bool",
+			"default": false
+		},
+		"replay_noclip": {
+			"name": "Allow Noclip in Replay",
+			"type": "bool",
+			"default": false
 		}
-	}
+	},
+	"dependencies": [
+		{
+			"id": "geode.node-ids",
+			"version": "v1.13.1"
+		}
+	]
 }

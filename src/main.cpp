@@ -288,6 +288,11 @@ class $modify(GJBaseGameLayer) {
 };
 
 class $modify(PlayLayer) {
+    struct Fields {
+        bool has_replay_noclip = Mod::get()->getSettingValue<bool>("replay_noclip");
+        bool hide_objects = Mod::get()->getSettingValue<bool>("hide_objects");
+    };
+
     void createObjectsFromSetupFinished() {
         // Call original add object if in replay mode
         if (Solana::getMode() == Mode::Replay || Solana::getMode() == Mode::Nothing) {
@@ -341,7 +346,10 @@ class $modify(PlayLayer) {
         if (Solana::getMode() == Mode::Replay) {
             if (!player->m_isDead) {
                 // Player died, just set to dead
-                player->m_isDead = true;
+                // replay_noclip
+                if (!this->m_fields->has_replay_noclip) {
+                    player->m_isDead = true;
+                }
                 // Check if player died before the last tick
                 auto lastTick = Solana::getReplayManager()->m_clicks.back().gameTick;
                 if (this->m_gameState.m_currentProgress < lastTick) {
@@ -385,15 +393,18 @@ class $modify(PlayLayer) {
             return;
         }
 
-        // // Update global play layer
-        // auto old_playlayer = GameManager::get()->m_playLayer;
-        // GameManager::get()->m_playLayer = this;
+        if (!this->m_fields->hide_objects) {
+            // Update global play layer
+            auto old_playlayer = GameManager::get()->m_playLayer;
+            GameManager::get()->m_playLayer = this;
 
-        // // Update visibility
-        // PlayLayer::updateVisibility(dt);
+            // Update visibility
+            PlayLayer::updateVisibility(dt);
 
-        // // Revert back to old play layer
-        // GameManager::get()->m_playLayer = old_playlayer;
+            // Revert back to old play layer
+            GameManager::get()->m_playLayer = old_playlayer;
+        }
+
     }
 
     void resetLevel() {
@@ -502,10 +513,8 @@ class $modify(PlayLayer) {
         // Save to file
         FileManager::save(this->m_level->m_levelName, best->m_clicks);
 
-        // Set to replay mode
-        PlayLayer::onQuit();
-
-        Solana::setMode(Mode::Replay);
+        // Send onQuit to all
+        Solana::getTrainManager()->onQuit();
     }
 
     void postUpdate(float dt) {

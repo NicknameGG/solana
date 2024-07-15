@@ -19,6 +19,15 @@ public:
         m_restartTick = tick;
     }
 
+    void onQuit() {
+        for (auto& layer : m_playlayers) {
+            layer.second.m_playLayer->onQuit();
+            layer.second.m_playLayer->m_uiLayer->removeFromParentAndCleanup(true);
+        }
+
+        m_playlayers.clear();
+    }
+
     void addPlayer(int id, PlayLayer* playLayer, Mode mode) {
         auto brain = Brain::create(playLayer, mode);
         m_playlayers[id] = brain;
