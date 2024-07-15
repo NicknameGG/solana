@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Geode/binding/PlayLayer.hpp"
-#include "Geode/utils/cocos.hpp"
 #include <Geode/Geode.hpp>
 #include <Geode/ui/GeodeUI.hpp>
 #include <Solana/File/FileManager.hpp>
