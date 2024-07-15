@@ -47,40 +47,21 @@ public:
         return true;
     }
 
+    void finishTraining() {
+        for (auto& layer : m_playlayers) {
+            layer.second.m_finished = true;
+            layer.second.m_playLayer->m_player1->m_isDead = true;
+        }
+    }
+
     void optimizeBrain(Brain* best) {
-        // Remove last 2 clicks
-        // best->removeLastNthClicks(2);
-
-        // Every 1000 ticks, restart from the beginning
-        if (best->m_playLayer->m_gameState.m_currentProgress > m_restartTick) {
-            m_restartTick += 1000;
-            for (auto& c : best->m_clicks) {
-                c.m_checkpoint = nullptr;
-                c.m_fixPlayerCheckpoint = nullptr;
-            }
-            best->m_deaths.clear();
-            best->m_farthestDeathTick = 0;
-            best->m_lastDeathTick = 0;
-
-            geode::log::debug("Restarting from the beginning");
-            return;
-        }
-
         // Remove depending on the death counter
-        if (best->m_lastDeathTick <= best->m_farthestDeathTick) {
-            auto steps = best->m_deaths[best->m_lastDeathTick];
-            // geode::log::debug("Last death tick: {}, removing {} steps", best->m_lastDeathTick, steps);
-            best->removeLastNthClicks(steps);
-            // If the death counter step is above 500, remove all deaths
-            if (steps > 100) {
-                // geode::log::debug("Removing all deaths");
-                best->m_deaths.clear();
-                best->m_farthestDeathTick = best->m_lastDeathTick;
-            }
-        }
-        // Means we reached the farthest death tick so we can remove all deaths
-        else {
-            // geode::log::debug("Farthest death tick reached: {}", best->m_farthestDeathTick);
+        auto steps = best->m_deaths[best->m_lastDeathTick];
+        best->removeLastNthClicks(steps);
+
+        // If the death counter step is above 200, remove all deaths
+        if (steps > 200) {
+            geode::log::debug("Removing all deaths");
             best->m_deaths.clear();
             best->m_farthestDeathTick = best->m_lastDeathTick;
         }
@@ -106,9 +87,13 @@ public:
     }
 
     Brain* getBestBrain(bool optimize = true) {
-        Brain* best = nullptr;
+        Brain* best = &m_playlayers.begin()->second;
         for (auto& layer : m_playlayers) {
-            if (best == nullptr || layer.second.m_clicks.size() > best->m_clicks.size()) {
+            if (layer.second.m_clicks.size() > best->m_clicks.size()) {
+                // Check if player is around void and ignore
+                if (layer.second.m_playLayer->m_player1->m_position.y >= layer.second.m_maxLevelY) {
+                    continue;
+                }
                 best = &layer.second;
             }
         }

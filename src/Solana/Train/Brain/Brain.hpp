@@ -9,6 +9,7 @@ public:
     std::vector<Click> m_clicks;
     bool m_isDead = false;
     bool m_reset = false;
+    bool m_finished = false;
     // gametick, deaths
     std::map<int, int> m_deaths;
     int m_farthestDeathTick = 0;
@@ -136,6 +137,10 @@ public:
     */
     Click digest() {
         if (m_mode == Mode::Nothing) {
+            return Click(0, PlayerAction::None);
+        }
+
+        if (m_finished) {
             return Click(0, PlayerAction::None);
         }
 

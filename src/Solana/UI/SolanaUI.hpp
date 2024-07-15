@@ -17,6 +17,17 @@ protected:
         this->onClose(nullptr);
     }
 
+    PlayLayer* createPlayLayer() {
+        // auto c = new PlayLayer();
+        // c->setObjType(CCObjectType::PlayLayer);
+        // c->init(this->m_level, false, false);
+
+        // // Speed up
+        // c->m_gameState.m_timeWarp = Mod::get()->getSettingValue<double>("timewarp");
+
+        return getChildOfType<PlayLayer>(PlayLayer::scene(this->m_level, false, false), 0);
+    }
+
     void onReplay(CCObject* sender) {
         auto fileExists = FileManager::exists(this->m_level->m_levelName);
         if (!fileExists) {
@@ -45,10 +56,12 @@ protected:
 
         Solana::setMode(Mode::Replay);
 
-        CCDirector::get()->pushScene(
-            PlayLayer::scene(this->m_level, false, false)
-        );
+        auto c = createPlayLayer();
 
+        auto scene = CCScene::create();
+        scene->addChild(c);
+
+        CCDirector::get()->pushScene(scene);
         this->play();
     }
 
@@ -83,7 +96,7 @@ protected:
         int columns = Mod::get()->getSettingValue<int64_t>("columns");
 
         for (int i = 0; i < rows*columns; i++) {
-            auto c = getChildOfType<PlayLayer>(PlayLayer::scene(this->m_level, false, false), 0);
+            auto c = createPlayLayer();
 
             // Speed up
             c->m_gameState.m_timeWarp = Mod::get()->getSettingValue<double>("timewarp");
@@ -107,11 +120,6 @@ protected:
         auto grid = Grid::create(rows, columns, array);
         scene->addChild(grid);
 
-        // Center the grid
-        auto winSize = CCDirector::get()->getWinSize();
-
-        grid->setPosition(grid->getContentSize() / -2);
-
         CCDirector::get()->pushScene(scene);
 
         this->play();
@@ -128,7 +136,7 @@ protected:
         int columns = Mod::get()->getSettingValue<int64_t>("columns");
 
         for (int i = 0; i < rows*columns; i++) {
-            auto c = getChildOfType<PlayLayer>(PlayLayer::scene(this->m_level, false, false), 0);
+            auto c = createPlayLayer();
 
             // Speed up
             c->m_gameState.m_timeWarp = Mod::get()->getSettingValue<double>("timewarp");
@@ -142,10 +150,6 @@ protected:
 
         auto grid = Grid::create(rows, columns, array);
         scene->addChild(grid);
-
-        // Center the grid
-        auto winSize = CCDirector::get()->getWinSize();		
-		grid->setPosition(grid->getContentSize() / -2);
 
         CCDirector::get()->pushScene(scene);
 

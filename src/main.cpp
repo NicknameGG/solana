@@ -34,7 +34,7 @@ class $modify(UILayer) {
 
 class $modify(PlayerObject) {
     void collidedWithObjectInternal(float p0, GameObject* p1, cocos2d::CCRect p2, bool p3) {
-        if (Solana::getMode() == Mode::Replay) {
+        if (Solana::getMode() == Mode::Replay || Solana::getMode() == Mode::Nothing) {
             PlayerObject::collidedWithObjectInternal(p0, p1, p2, p3);
             return;
         }
@@ -57,7 +57,7 @@ class $modify(PlayerObject) {
     }
 
     void collidedWithSlopeInternal(float p0, GameObject* p1, bool p2) {
-        if (Solana::getMode() == Mode::Replay) {
+        if (Solana::getMode() == Mode::Replay || Solana::getMode() == Mode::Nothing) {
             PlayerObject::collidedWithSlopeInternal(p0, p1, p2);
             return;
         }
@@ -80,7 +80,7 @@ class $modify(PlayerObject) {
     }
 
     void loadFromCheckpoint(PlayerCheckpoint* obj) {
-        if (Solana::getMode() == Mode::Replay) {
+        if (Solana::getMode() == Mode::Replay || Solana::getMode() == Mode::Nothing) {
             PlayerObject::loadFromCheckpoint(obj);
             return;
         }
@@ -109,7 +109,7 @@ std::vector<std::string> addreses_checked;
 
 class $modify(GJBaseGameLayer) {
     void toggleFlipped(bool p0, bool p1) {
-        if (Solana::getMode() == Mode::Replay) {
+        if (Solana::getMode() == Mode::Replay || Solana::getMode() == Mode::Nothing) {
             GJBaseGameLayer::toggleFlipped(p0, p1);
             return;
         }
@@ -290,7 +290,7 @@ class $modify(GJBaseGameLayer) {
 class $modify(PlayLayer) {
     void createObjectsFromSetupFinished() {
         // Call original add object if in replay mode
-        if (Solana::getMode() == Mode::Replay) {
+        if (Solana::getMode() == Mode::Replay || Solana::getMode() == Mode::Nothing) {
             PlayLayer::createObjectsFromSetupFinished();
             return;
         }
@@ -312,6 +312,11 @@ class $modify(PlayLayer) {
     }
 
     void destroyPlayer(PlayerObject* player, GameObject* noClipSpike) {
+        if (Solana::getMode() == Mode::Nothing) {
+            PlayLayer::destroyPlayer(player, noClipSpike);
+            return;
+        }
+
         // Detect No Clip spike
         if (noClipSpike) {
             if (this->m_unk3688) {
@@ -375,7 +380,7 @@ class $modify(PlayLayer) {
 
     void updateVisibility(float dt) {
         // Call original update visibility if in replay mode
-        if (Solana::getMode() == Mode::Replay) {
+        if (Solana::getMode() == Mode::Replay || Solana::getMode() == Mode::Nothing) {
             PlayLayer::updateVisibility(dt);
             return;
         }
@@ -392,7 +397,7 @@ class $modify(PlayLayer) {
     }
 
     void resetLevel() {
-        if (Solana::getMode() == Mode::Replay) {
+        if (Solana::getMode() == Mode::Replay || Solana::getMode() == Mode::Nothing) {
             // Call original reset level if in replay mode
             PlayLayer::resetLevel();
             return;
@@ -456,24 +461,33 @@ class $modify(PlayLayer) {
 
     void levelComplete() {
         // Call original level complete if in replay mode
-        if (Solana::getMode() == Mode::Replay) {
+        if (Solana::getMode() == Mode::Replay || Solana::getMode() == Mode::Nothing) {
             PlayLayer::levelComplete();
             return;
         }
 
-        Solana::setMode(Mode::Nothing);
-
         // Save to CSV file
         auto layer = Solana::getTrainManager()->getPlayer(this->m_player1->m_uID);
+
+        geode::log::info("Training complete");
 
         // Save to CSV
         FileManager::save(this->m_level->m_levelName, layer->m_clicks);
 
+        // Set global
+        auto old_playlayer = GameManager::get()->m_playLayer;
+        GameManager::get()->m_playLayer = this;
+
         PlayLayer::levelComplete();
+
+        // Revert back to old play layer
+        GameManager::get()->m_playLayer = old_playlayer;
+
+        Solana::getTrainManager()->finishTraining();
     }
 
     void onQuit() {
-        if (Solana::getMode() == Mode::Replay) {
+        if (Solana::getMode() == Mode::Replay || Solana::getMode() == Mode::Nothing) {
             // Call original on quit if in replay mode
             PlayLayer::onQuit();
             return;
@@ -496,7 +510,7 @@ class $modify(PlayLayer) {
 
     void postUpdate(float dt) {
         // Call original post update if in replay mode
-        if (Solana::getMode() == Mode::Replay) {
+        if (Solana::getMode() == Mode::Replay || Solana::getMode() == Mode::Nothing) {
             PlayLayer::postUpdate(dt);
             return;
         }
