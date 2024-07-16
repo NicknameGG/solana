@@ -21,8 +21,21 @@ public:
 
     void onQuit() {
         for (auto& layer : m_playlayers) {
-            layer.second.m_playLayer->onQuit();
+            auto playLayer = layer.second.m_playLayer;
+            // On Quit recreation
+            auto ccegl = cocos2d::CCEGLView::sharedOpenGLView();
+            ccegl->showCursor(1);
+            // playLayer->m_uiLayer->m_pauseBtn->setNormalImage(playLayer->m_uiLayer->m_pauseBtn);
+            playLayer->stopActionByTag(31);
+            playLayer->stopAllActions();
+            playLayer->unscheduleAllSelectors();
+            
+            playLayer->resetAudio();
+            GameManager::get()->fadeInMenuMusic();
+            
             layer.second.m_playLayer->m_uiLayer->removeFromParentAndCleanup(true);
+            layer.second.m_playLayer->removeFromParentAndCleanup(true);
+
         }
 
         m_playlayers.clear();

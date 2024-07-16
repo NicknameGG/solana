@@ -513,8 +513,11 @@ class $modify(PlayLayer) {
         // Save to file
         FileManager::save(this->m_level->m_levelName, best->m_clicks);
 
+        GameManager::get()->returnToLastScene(this->m_level);
+        
         // Send onQuit to all
         Solana::getTrainManager()->onQuit();
+
     }
 
     void postUpdate(float dt) {

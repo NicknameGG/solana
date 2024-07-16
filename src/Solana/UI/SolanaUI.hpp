@@ -21,6 +21,7 @@ protected:
         auto c = new PlayLayer();
         c->setObjType(CCObjectType::PlayLayer);
         c->init(this->m_level, false, false);
+        c->autorelease();
 
         return c;
 

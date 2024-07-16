@@ -59,6 +59,22 @@ public:
         m_lastDeathTick = 0;
     }
 
+    void destroy() {
+        for (auto& click : m_clicks) {
+            if (click.m_checkpoint != nullptr) {
+                delete click.m_checkpoint;
+                delete click.m_fixPlayerCheckpoint;
+            }
+        }
+
+        if (m_resetData.m_checkpoint != nullptr) {
+            delete m_resetData.m_checkpoint;
+            delete m_resetData.m_fixPlayerCheckpoint;
+        }
+
+        m_clicks.clear();
+    }
+
     static Brain create(PlayLayer* playLayer, Mode mode) {
         auto brain = Brain();
         brain.m_playLayer = playLayer;
