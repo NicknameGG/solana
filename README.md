@@ -3,7 +3,7 @@ Geometry Dash random pathfinding algorithm POC
 
 ## How to use
 > Solana is NOT intended to be use as a normal mod, it's so unstable you can't play any level with it.
-> Solana was also never tested on other plataforms than Windows.
+> Solana was also never tested on platforms other than Windows.
 1. Build the project using the provided CMakeLists.txt
 2. Add manually to your Geode mods folder
 3. In order to use Solana you must need to load the level in the local levels tab, you will see the NCS button to the right, that's the UI.
